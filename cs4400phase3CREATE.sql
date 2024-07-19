@@ -68,9 +68,9 @@ create table route (
 create table route_path (
   routeID char(50),
   legID char(50),
-  sequence char(100), -- wtf is the data type of this
+  sequence decimal(2, 0), -- wtf is the data type of this
   
-  primary key (sequence), -- check the note on the bottom idk what it rly means
+  primary key (routeID, legID, sequence), -- check the note on the bottom idk what it rly means
   foreign key (routeID) references route(routeID),
   foreign key (legID) references leg(legID)
 ) engine = innodb;
