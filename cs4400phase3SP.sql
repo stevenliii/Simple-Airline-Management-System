@@ -134,7 +134,7 @@ drop procedure if exists retire_flight;
 delimiter //
 create procedure retire_flight (in ip_flightID varchar(50))
 sp_main: begin
-	if (select flight_status into s from flight where flightID = ip_flightID) = 'on_ground' and 
+	if (select flight_status from flight where flightID = ip_flightID) = 'on_ground' and 
        ((select progress from flight where flightID = ip_flightID) = 0 or 
         (select progress from flight where flightID = ip_flightID) = 
         (select max(sequence) from route_path join flight on flight.routeID = route_path.routeID where flightID = ip_flightID)) then
