@@ -105,7 +105,8 @@ drop procedure if exists flight_landing;
 delimiter //
 create procedure flight_landing (in ip_flightID varchar(50))
 sp_main: begin
-	
+	update flight set flight_status = 'on_ground' where flightID = ip_flightID;
+    update flight set next_time = next_time + interval 10 hour where flightID = ip_flightID;
 end //
 delimiter ;
 
@@ -120,6 +121,6 @@ drop procedure if exists retire_flight;
 delimiter //
 create procedure retire_flight (in ip_flightID varchar(50))
 sp_main: begin
-
+	delete from retire_flight where flightID = ip_flightID;
 end //
 delimiter ;
