@@ -51,10 +51,16 @@ drop procedure if exists add_airplane;
 delimiter //
 create procedure add_airplane (in ip_airlineID varchar(50), in ip_tail_num varchar(50),
 	in ip_seat_capacity integer, in ip_speed integer, in ip_locationID varchar(50),
-    in ip_plane_type varchar(100), in ip_skids boolean, in ip_propellers integer,
-    in ip_jet_engines integer)
+	in ip_plane_type varchar(100), in ip_skids boolean, in ip_propellers integer,
+	in ip_jet_engines integer)
 sp_main: begin
-	insert into airplane values (ip_airlineID, ip_tail_num, ip_seat_capacity, ip_speed, ip_locationID, ip_plane_type, ip_skids, ip_propellers, ip_jet_engines);
+	if ip_locationID not in (select locID from location) and
+       ip_seat_capacity > 0 and
+       ip_speed > 0 and 
+       ip_airlineID in (select airlineID from airline) and 
+       ip_tail_num not in (select tail_num from airplane join airline on airplane.airlineID = airline.airlineID) then
+		insert into airplane values (ip_airlineID, ip_tail_num, ip_seat_capacity, ip_speed, ip_locationID, ip_plane_type, ip_skids, ip_propellers, ip_jet_engines);
+	end if;
 end //
 delimiter ;
 
@@ -70,7 +76,10 @@ delimiter //
 create procedure add_airport (in ip_airportID char(3), in ip_airport_name varchar(200),
     in ip_city varchar(100), in ip_state varchar(100), in ip_country char(3), in ip_locationID varchar(50))
 sp_main: begin
-	insert into airport values (ip_airportID, ip_airport_name, ip_city, ip_state, ip_country, ip_locationID);
+	if ip_airportID not in (select airportID from airport) and 
+       ip_locationID not in (select locID from location) then
+		insert into airport values (ip_airportID, ip_airport_name, ip_city, ip_state, ip_country, ip_locationID);
+    end if;
 end //
 delimiter ;
 
@@ -90,7 +99,11 @@ create procedure offer_flight (in ip_flightID varchar(50), in ip_routeID varchar
     in ip_support_airline varchar(50), in ip_support_tail varchar(50), in ip_progress integer,
     in ip_next_time time, in ip_cost integer)
 sp_main: begin
-	insert into flights values (ip_flightID, ip_routeID, ip_support_airilne, ip_support_tail, in_progress, ip_next_time, ip_cost);
+	if concat(ip_support_airline, ip_support_tail) not in (select concat(support_airline, support_tail) from flight) and 
+	   ip_routeID is not null and
+       ip_progress = (select max(sequence) from route_path where ip_routeID = routeID) then
+	insert into flights values (ip_flightID, ip_routeID, ip_support_airilne, ip_support_tail, ip_progress, 'on_ground', ip_next_time, ip_cost);
+    end if;
 end //
 delimiter ;
 
@@ -121,6 +134,13 @@ drop procedure if exists retire_flight;
 delimiter //
 create procedure retire_flight (in ip_flightID varchar(50))
 sp_main: begin
-	delete from retire_flight where flightID = ip_flightID;
+	if (select flight_status into s from flight where flightID = ip_flightID) = 'on_ground' and 
+       ((select progress from flight where flightID = ip_flightID) = 0 or 
+        (select progress from flight where flightID = ip_flightID) = 
+        (select max(sequence) from route_path join flight on flight.routeID = route_path.routeID where flightID = ip_flightID)) then
+		
+        delete from retire_flight where flightID = ip_flightID;
+        
+    end if;
 end //
 delimiter ;
