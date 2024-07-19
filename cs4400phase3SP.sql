@@ -54,7 +54,7 @@ create procedure add_airplane (in ip_airlineID varchar(50), in ip_tail_num varch
     in ip_plane_type varchar(100), in ip_skids boolean, in ip_propellers integer,
     in ip_jet_engines integer)
 sp_main: begin
-
+	insert into airplane values (ip_airlineID, ip_tail_num, ip_seat_capacity, ip_speed, ip_locationID, ip_plane_type, ip_skids, ip_propellers, ip_jet_engines);
 end //
 delimiter ;
 
@@ -70,7 +70,7 @@ delimiter //
 create procedure add_airport (in ip_airportID char(3), in ip_airport_name varchar(200),
     in ip_city varchar(100), in ip_state varchar(100), in ip_country char(3), in ip_locationID varchar(50))
 sp_main: begin
-
+	insert into airport values (ip_airportID, ip_airport_name, ip_city, ip_state, ip_country, ip_locationID);
 end //
 delimiter ;
 
@@ -90,7 +90,7 @@ create procedure offer_flight (in ip_flightID varchar(50), in ip_routeID varchar
     in ip_support_airline varchar(50), in ip_support_tail varchar(50), in ip_progress integer,
     in ip_next_time time, in ip_cost integer)
 sp_main: begin
-
+	insert into flights values (ip_flightID, ip_routeID, ip_support_airilne, ip_support_tail, in_progress, ip_next_time, ip_cost);
 end //
 delimiter ;
 
@@ -99,13 +99,13 @@ delimiter ;
 /* This stored procedure updates the state for a flight landing at the next airport
 along it's route.  The time for the flight should be moved one hour into the future
 to allow for the flight to be checked, refueled, restocked, etc. for the next leg
-of travel. 
+of travel. */
 -- -----------------------------------------------------------------------------
 drop procedure if exists flight_landing;
 delimiter //
 create procedure flight_landing (in ip_flightID varchar(50))
 sp_main: begin
-
+	
 end //
 delimiter ;
 
