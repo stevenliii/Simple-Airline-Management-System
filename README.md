@@ -1,1 +1,1 @@
-# CS4400Project
+This project uses RDBMS techniques to effectively design and implement a database system for a hypothetical airline management system. It was designed and planned with the use of entity relationship diagrams and implemented with MySQL.
